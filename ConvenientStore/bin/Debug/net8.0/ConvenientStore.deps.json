@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "ConvenientStore/1.0.0": {
+        "runtime": {
+          "ConvenientStore.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ConvenientStore/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
