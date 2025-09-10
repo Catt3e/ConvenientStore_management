@@ -1,0 +1,110 @@
+@model ConvenientStore.Models.Sale
+
+@{
+    ViewData["Title"] = "New Sale";
+}
+
+<h1>New Sale</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" id="saleForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="CustomerName" class="form-label">Customer Name (Optional)</label>
+                                <input asp-for="CustomerName" class="form-control" placeholder="Walk-in customer" />
+                                <span asp-validation-for="CustomerName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="PaymentMethod" class="form-label">Payment Method</label>
+                                <select asp-for="PaymentMethod" class="form-select">
+                                    <option value="Cash">Cash</option>
+                                    <option value="CreditCard">Credit Card</option>
+                                    <option value="DebitCard">Debit Card</option>
+                                    <option value="MobilePayment">Mobile Payment</option>
+                                </select>
+                                <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>Products</h5>
+                </div>
+                <div class="card-body">
+                    <div id="productsList">
+                        @foreach (var product in ViewBag.Products as List<ConvenientStore.Models.Product>)
+                        {
+                            <div class="row mb-2 align-items-center product-row">
+                                <div class="col-md-5">
+                                    <label class="form-label">@product.Name (@product.Category?.Name) - $@product.Price</label>
+                                    <small class="text-muted d-block">Stock: @product.StockQuantity</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="number" name="Quantities" min="0" max="@product.StockQuantity" class="form-control" placeholder="Qty" />
+                                    <input type="hidden" name="ProductIds" value="@product.Id" />
+                                </div>
+                                <div class="col-md-2">
+                                    <span class="price-display">$0.00</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Complete Sale</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Sale Summary</h5>
+            </div>
+            <div class="card-body">
+                <div id="saleTotal">
+                    <h4>Total: $<span id="totalAmount">0.00</span></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            function updateTotal() {
+                var total = 0;
+                $('.product-row').each(function() {
+                    var quantity = parseInt($(this).find('input[name="Quantities"]').val()) || 0;
+                    var priceText = $(this).find('label').text();
+                    var price = parseFloat(priceText.match(/\$(\d+\.\d+)/)[1]);
+                    var subtotal = quantity * price;
+                    $(this).find('.price-display').text('$' + subtotal.toFixed(2));
+                    total += subtotal;
+                });
+                $('#totalAmount').text(total.toFixed(2));
+            }
+
+            $('input[name="Quantities"]').on('input', updateTotal);
+        });
+    </script>
+}
